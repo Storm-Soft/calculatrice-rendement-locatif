@@ -1,0 +1,171 @@
+﻿@using ImmobilierCalculator.Application.Rendement
+@using ImmobilierCalculator.Application.ValueObjects
+<h3>Rendement</h3>
+
+<p>
+    <MatTextField @bind-Value="@Montant" Label="Montant Prêt" />
+    <MatSlider @bind-Value="@Montant" ValueMin="0" ValueMax="1000000" />
+</p>
+<p>
+    <MatTextField @bind-Value="@Mensualites" Label="Mensualités" />
+    <MatSlider @bind-Value="@Mensualites" ValueMin="0" ValueMax="5000" />
+</p>
+<p>
+    <MatTextField @bind-Value="@Duree" Label="Durée Prêt" HelperText="En nombre de mois" HelperTextPersistent="true" />
+    <MatSlider @bind-Value="@Duree" ValueMin="0" ValueMax="360" />
+</p>
+<p>
+    <MatTextField @bind-Value="@Taux" Label="Taux" />
+    <MatSlider @bind-Value="@Taux" ValueMin="0.0" ValueMax="2.0" />
+</p>
+<p>
+    <MatTextField @bind-Value="@Assurance" Label="Taux assurance" />
+    <MatSlider @bind-Value="@Assurance" ValueMin="0.0" ValueMax="2.0" />
+</p>
+
+<p>
+    <MatTextField @bind-Value="@Loyer" Label="Loyers" />
+    <MatSlider @bind-Value="@Loyer" ValueMin="0" ValueMax="10000" />
+</p>
+<p>
+    <MatTextField @bind-Value="@Taxe" Label="Taxe Foncière" />
+</p>
+
+<p>
+    <MatTextField @bind-Value="@Rendement" Label="Rendement" />
+</p>
+
+
+@code {
+    private bool pretParMensualite = false;
+
+    private MontantPrêt montant = new MontantPrêt(0);
+
+    public int Montant
+    {
+        get => montant.Valeur;
+        set => Calculate(new MontantPrêt(value));
+    }
+
+    private MontantEchéance mensualites = new MontantEchéance(0);
+
+    public int Mensualites
+    {
+        get => mensualites.Valeur;
+        set => Calculate(new MontantEchéance(value));
+    }
+
+
+    private DuréePrêt duree = new DuréePrêt(180);
+
+    public int Duree
+    {
+        get => duree.NombreMois;
+        set => Calculate(new DuréePrêt(value));
+    }
+
+    private TauxNetPrêt taux = new TauxNetPrêt(1m);
+
+    public double Taux
+    {
+        get => decimal.ToDouble(taux.Valeur);
+        set => Calculate(new TauxNetPrêt((decimal) value));
+    }
+
+    private TauxAssurancePrêt assurance = new TauxAssurancePrêt(0.2m);
+
+    public double Assurance
+    {
+        get => decimal.ToDouble(assurance.Valeur);
+        set => Calculate(new TauxAssurancePrêt((decimal) value));
+    }
+
+    private Loyer loyer = new Loyer(0);
+
+    public int Loyer
+    {
+        get => loyer.Valeur;
+        set => Calculate(new Loyer(value));
+    }
+
+
+    private Taxe taxe = new Taxe(0);
+
+    public int Taxe
+    {
+        get => taxe.Valeur;
+        set => Calculate(new Taxe(value));
+    }
+
+
+    private Rendement rendement = new Rendement(0);
+
+    public string Rendement
+    {
+        get => $"{rendement.Valeur:00.00}";
+        set { }
+    }
+
+
+
+    void Calculate(Prêt prêt, Taxe taxe, Loyer loyer)
+    {
+        var conditions = new ConditionLocative(loyer, new ChargeMensuelle(0), new Surface(0));
+
+        rendement = new CalculatriceRendement().Calculer(prêt, new[] {conditions}, taxe);
+        Apply(prêt, taxe, loyer, rendement);
+    }
+
+    void Calculate(MontantPrêt montant)
+    {
+        pretParMensualite = false;
+        Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
+    }
+
+    void Calculate(MontantEchéance échéance)
+    {
+        pretParMensualite = true;
+        Calculate(new CalculatricePrêt().Calculer(échéance, duree, taux, assurance), taxe, loyer);
+    }
+
+    void Calculate(DuréePrêt duree, TauxNetPrêt taux, TauxAssurancePrêt assurance)
+    {
+        if (pretParMensualite)
+            Calculate(new CalculatricePrêt().Calculer(mensualites, duree, taux, assurance), taxe, loyer);
+        else
+            Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
+    }
+
+    void Calculate(DuréePrêt duree)
+        => Calculate(duree, taux, assurance);
+
+    void Calculate(TauxNetPrêt taux)
+        => Calculate(duree, taux, assurance);
+
+    void Calculate(TauxAssurancePrêt assurance)
+        => Calculate(duree, taux, assurance);
+
+    void Calculate(Taxe taxe)
+        => Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
+
+    void Calculate(Loyer loyer)
+        => Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
+
+
+    private void Apply(Prêt prêt, Taxe taxe, Loyer loyer, Rendement rendement)
+    {
+        this.rendement = rendement;
+        this.taxe = taxe;
+        this.loyer = loyer;
+        this.montant = prêt.Montant;
+        this.mensualites = prêt.Echéance;
+        this.duree = prêt.Durée;
+        this.taux = prêt.Taux;
+        this.assurance = prêt.TauxAssurance;
+        StateHasChanged();
+    }
+
+}
+
+
+
