@@ -1,175 +1,228 @@
 ﻿@using ImmobilierCalculator.Application.ValueObjects
 @using ImmobilierCalculator.Application.Calculatrices
-<p>
-    <MatTextField @bind-Value="@Montant" Label="Montant Prêt" />
-    <MatSlider @bind-Value="@Montant" ValueMin="0" ValueMax="1000000" />
-</p>
-<p>
-    <MatTextField @bind-Value="@Mensualites" Label="Mensualités" />
-    <MatSlider @bind-Value="@Mensualites" ValueMin="0" ValueMax="5000" />
-</p>
-<p>
-    <MatTextField @bind-Value="@Duree" Label="Durée Prêt" HelperText="En nombre de mois" HelperTextPersistent="true" />
-    <MatSlider @bind-Value="@Duree" ValueMin="0" ValueMax="360" />
-</p>
-<p>
-    <MatTextField @bind-Value="@Taux" Label="Taux" />
-    <MatSlider @bind-Value="@Taux" ValueMin="0.0" ValueMax="2.0" />
-</p>
-<p>
-    <MatTextField @bind-Value="@Assurance" Label="Taux assurance" />
-    <MatSlider @bind-Value="@Assurance" ValueMin="0.0" ValueMax="2.0" />
-</p>
-
-<p>
-    <MatTextField @bind-Value="@Loyer" Label="Loyers" />
-    <MatSlider @bind-Value="@Loyer" ValueMin="0" ValueMax="@LoyerMax" />
-</p>
-<p>
-    <MatTextField @bind-Value="@Taxe" Label="Taxe Foncière" />
-</p>
-
-<p>
-    <RendementComponent @bind-Rendement="@rendement" @bind-RendementMaximum="@rendementMax"/>
-</p>
+@using Microsoft.AspNetCore.Components
 
 
+<RadzenTemplateForm Data="@this">
+    <div class="row">
+        <div class="col-md-6">
+            <RadzenFieldset Text="Prêt">
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Montant" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenNumeric ShowUpDown="false" TValue="int" @bind-Value=@Montant />
+                        <MatSlider @bind-Value="@Montant" ValueMin="0" ValueMax="1000000" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Mensualités" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenNumeric ShowUpDown="false" TValue="int" @bind-Value=@Mensualites />
+                        <MatSlider @bind-Value="@Mensualites" ValueMin="0" ValueMax="5000" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Durée" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenNumeric ShowUpDown="false" TValue="int" @bind-Value=@Duree />
+                        <MatSlider @bind-Value="@Duree" ValueMin="0" ValueMax="360" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Taux" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenNumeric ShowUpDown="false" TValue="double" @bind-Value=@Taux />
+                        <MatSlider @bind-Value="@Taux" ValueMin="0.0" ValueMax="2.0" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Taux assurance" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenNumeric ShowUpDown="false" TValue="double" @bind-Value=@Assurance />
+                        <MatSlider @bind-Value="@Assurance" ValueMin="0.0" ValueMax="2.0" />
+                    </div>
+                </div>
+            </RadzenFieldset>
+        </div>
+        <div class="col-md-6">
+            <RadzenFieldset Text="Location">
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="Loyer" />
+                    </div>
+                    <div class="col-md-10">
+                        <RadzenNumeric ShowUpDown="false" TValue="int" @bind-Value=@Loyer />
+                        <MatSlider @bind-Value="@Loyer" ValueMin="0" ValueMax="@LoyerMax" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="Taxe Foncière" />
+                    </div>
+                    <div class="col-md-10">
+                        <RadzenNumeric ShowUpDown="false" TValue="int" @bind-Value=@Taxe />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="Rendement estimé" />
+                    </div>
+                    <div class="col-md-10">
+                        <RendementComponent @bind-Rendement="@rendement" @bind-RendementMaximum="@rendementMax" />
+                    </div>
+                </div>
+            </RadzenFieldset>
+        </div>
+    </div>
+</RadzenTemplateForm>
+    
 @code {
-    private bool pretParMensualite = false;
+    
+        private bool pretParMensualite = false;
 
-    private MontantPrêt montant = new MontantPrêt(0);
+        private MontantPrêt montant = new MontantPrêt(0);
 
-    public int Montant
-    {
-        get => montant.Valeur;
-        set => Calculate(new MontantPrêt(value));
-    }
+        public int Montant
+        {
+            get => montant.Valeur;
+            set => Calculate(new MontantPrêt(value));
+        }
 
-    private MontantEchéance mensualites = new MontantEchéance(0);
+        private MontantEchéance mensualites = new MontantEchéance(0);
 
-    public int Mensualites
-    {
-        get => mensualites.Valeur;
-        set => Calculate(new MontantEchéance(value));
-    }
-
-
-    private DuréePrêt duree = new DuréePrêt(180);
-
-    public int Duree
-    {
-        get => duree.NombreMois;
-        set => Calculate(new DuréePrêt(value));
-    }
-
-    private TauxNetPrêt taux = new TauxNetPrêt(1m);
-
-    public double Taux
-    {
-        get => decimal.ToDouble(taux.Valeur);
-        set => Calculate(new TauxNetPrêt((decimal) value));
-    }
-
-    private TauxAssurancePrêt assurance = new TauxAssurancePrêt(0.2m);
-
-    public double Assurance
-    {
-        get => decimal.ToDouble(assurance.Valeur);
-        set => Calculate(new TauxAssurancePrêt((decimal) value));
-    }
-
-    private Loyer loyer = new Loyer(0);
-
-    public int Loyer
-    {
-        get => loyer.Valeur;
-        set => Calculate(new Loyer(value));
-    }
-
-    private Loyer loyerMax = new Loyer(0);
-    public int LoyerMax { get; set; }
+        public int Mensualites
+        {
+            get => mensualites.Valeur;
+            set => Calculate(new MontantEchéance(value));
+        }
 
 
-    private Taxe taxe = new Taxe(0);
+        private DuréePrêt duree = new DuréePrêt(180);
 
-    public int Taxe
-    {
-        get => taxe.Valeur;
-        set => Calculate(new Taxe(value));
-    }
+        public int Duree
+        {
+            get => duree.NombreMois;
+            set => Calculate(new DuréePrêt(value));
+        }
+
+        private TauxNetPrêt taux = new TauxNetPrêt(1m);
+
+        public double Taux
+        {
+            get => decimal.ToDouble(taux.Valeur);
+            set => Calculate(new TauxNetPrêt((decimal)value));
+        }
+
+        private TauxAssurancePrêt assurance = new TauxAssurancePrêt(0.2m);
+
+        public double Assurance
+        {
+            get => decimal.ToDouble(assurance.Valeur);
+            set => Calculate(new TauxAssurancePrêt((decimal)value));
+        }
+
+        private Loyer loyer = new Loyer(0);
+
+        public int Loyer
+        {
+            get => loyer.Valeur;
+            set => Calculate(new Loyer(value));
+        }
+
+        private Loyer loyerMax = new Loyer(0);
+        public int LoyerMax { get; set; }
 
 
-    private Rendement rendement = new Rendement(0);
-    private Rendement rendementMax = new Rendement(10);
-    //public string Rendement
-    //{
-    //get => $"{rendement.Valeur:00.00}";
-    //set { }
-    //}
+        private Taxe taxe = new Taxe(0);
+
+        public int Taxe
+        {
+            get => taxe.Valeur;
+            set => Calculate(new Taxe(value));
+        }
+
+
+        private Rendement rendement = new Rendement(0);
+        private Rendement rendementMax = new Rendement(10);
+        //public string Rendement
+        //{
+        //get => $"{rendement.Valeur:00.00}";
+        //set { }
+        //}
 
 
 
-    void Calculate(Prêt prêt, Taxe taxe, Loyer loyer)
-    {
-        var conditions = new ConditionLocative(loyer, new ChargeMensuelle(0), new Surface(0));
+        void Calculate(Prêt prêt, Taxe taxe, Loyer loyer)
+        {
+            var conditions = new ConditionLocative(loyer, new ChargeMensuelle(0), new Surface(0));
 
-        rendement = new CalculatriceRendement().Calculer(prêt, new[] {conditions}, taxe);
+            rendement = new CalculatriceRendement().Calculer(prêt, new[] { conditions }, taxe);
 
-        loyerMax = new CalculatriceRendement().Calculer(prêt.Montant, rendementMax, taxe);
-        Apply(prêt, taxe, loyer, rendement, loyerMax);
-    }
+            loyerMax = new CalculatriceRendement().Calculer(prêt.Montant, rendementMax, taxe);
+            Apply(prêt, taxe, loyer, rendement, loyerMax);
+        }
 
-    void Calculate(MontantPrêt montant)
-    {
-        pretParMensualite = false;
-        Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
-    }
-
-    void Calculate(MontantEchéance échéance)
-    {
-        pretParMensualite = true;
-        Calculate(new CalculatricePrêt().Calculer(échéance, duree, taux, assurance), taxe, loyer);
-    }
-
-    void Calculate(DuréePrêt duree, TauxNetPrêt taux, TauxAssurancePrêt assurance)
-    {
-        if (pretParMensualite)
-            Calculate(new CalculatricePrêt().Calculer(mensualites, duree, taux, assurance), taxe, loyer);
-        else
+        void Calculate(MontantPrêt montant)
+        {
+            pretParMensualite = false;
             Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
+        }
+
+        void Calculate(MontantEchéance échéance)
+        {
+            pretParMensualite = true;
+            Calculate(new CalculatricePrêt().Calculer(échéance, duree, taux, assurance), taxe, loyer);
+        }
+
+        void Calculate(DuréePrêt duree, TauxNetPrêt taux, TauxAssurancePrêt assurance)
+        {
+            if (pretParMensualite)
+                Calculate(new CalculatricePrêt().Calculer(mensualites, duree, taux, assurance), taxe, loyer);
+            else
+                Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
+        }
+
+        void Calculate(DuréePrêt duree)
+            => Calculate(duree, taux, assurance);
+
+        void Calculate(TauxNetPrêt taux)
+            => Calculate(duree, taux, assurance);
+
+        void Calculate(TauxAssurancePrêt assurance)
+            => Calculate(duree, taux, assurance);
+
+        void Calculate(Taxe taxe)
+            => Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
+
+        void Calculate(Loyer loyer)
+            => Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
+
+
+        private void Apply(Prêt prêt, Taxe taxe, Loyer loyer, Rendement rendement, Loyer loyerMax)
+        {
+            this.rendement = rendement;
+            this.taxe = taxe;
+            this.loyer = loyer;
+            this.montant = prêt.Montant;
+            this.mensualites = prêt.Echéance;
+            this.duree = prêt.Durée;
+            this.taux = prêt.Taux;
+            this.assurance = prêt.TauxAssurance;
+            this.LoyerMax = loyerMax.Valeur;
+            StateHasChanged();
+        }
+
     }
-
-    void Calculate(DuréePrêt duree)
-        => Calculate(duree, taux, assurance);
-
-    void Calculate(TauxNetPrêt taux)
-        => Calculate(duree, taux, assurance);
-
-    void Calculate(TauxAssurancePrêt assurance)
-        => Calculate(duree, taux, assurance);
-
-    void Calculate(Taxe taxe)
-        => Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
-
-    void Calculate(Loyer loyer)
-        => Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer);
-
-
-    private void Apply(Prêt prêt, Taxe taxe, Loyer loyer, Rendement rendement, Loyer loyerMax)
-    {
-        this.rendement = rendement;
-        this.taxe = taxe;
-        this.loyer = loyer;
-        this.montant = prêt.Montant;
-        this.mensualites = prêt.Echéance;
-        this.duree = prêt.Durée;
-        this.taux = prêt.Taux;
-        this.assurance = prêt.TauxAssurance;
-        this.LoyerMax = loyerMax.Valeur;
-        StateHasChanged();
-    }
-
-}
 
 
 
