@@ -54,6 +54,5 @@ namespace ImmobilierCalculator.Tests
             var acceptable = rendementCalculé > rendement * 0.99m && rendementCalculé < rendement * 1.01m;
             acceptable.Should().BeTrue();
         }
-
     }
 }

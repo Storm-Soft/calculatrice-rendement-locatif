@@ -21,6 +21,14 @@ namespace ImmobilierCalculator.Application.Calculatrices
         public Loyer Calculer(MontantPrêt prêt, Rendement rendement, Taxe taxeFoncière)
          => new ((int) Math.Round((rendement.Valeur* prêt.Valeur) / (12 * 100) + taxeFoncière.Valeur/12));
 
+        /// <summary>
+        /// Calcule le montant mensuel de l'opération
+        public MontantOpérationMensuel Calculer(MontantEchéance échéance, Loyer loyer)
+            => échéance == loyer
+                ? new OperationNeutre()
+                :(échéance > loyer)
+                    ? new CoûtMensuel(échéance - loyer)
+                    : new BénéficeMensuel(loyer - échéance);
 
         public Simulation Simuler(Rendement rendement, BienImmobilier bienImmobilier)
         {

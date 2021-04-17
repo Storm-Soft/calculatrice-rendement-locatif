@@ -1,0 +1,29 @@
+﻿@using ImmobilierCalculator.Application.ValueObjects
+
+@switch (@MontantMensuel)
+{
+    case OperationNeutre _:
+        <h3>Opération neutre</h3>
+        break;
+    case CoûtMensuel cout:
+        <h3>Coût mensuel</h3>
+        <h2 style="color: red">@cout.Valeur€</h2>
+        break;
+    case BénéficeMensuel bénéfice:
+        <h3>Bénéfice mensuel</h3>
+        <h2 style="color: green">@bénéfice.Valeur€</h2>
+        break;
+}
+
+
+@code {
+
+    [Parameter]
+    public MontantOpérationMensuel MontantMensuel { get; set; }
+
+    [Parameter]
+    public EventCallback<MontantOpérationMensuel> MontantMensuelChanged { get; set; }
+
+
+
+}

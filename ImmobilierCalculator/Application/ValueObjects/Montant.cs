@@ -12,6 +12,12 @@ namespace ImmobilierCalculator.Application.ValueObjects
 
         public static Montant operator *(Montant montantA, double coefficient)
             => montantA with { Valeur = (int)Math.Round(montantA.Valeur * coefficient) };
+
+        public static int operator +(Montant montantA, Montant montantB)
+            => montantA.Valeur + montantB.Valeur;
+
+        public static int operator -(Montant montantA, Montant montantB)
+            => montantA.Valeur - montantB.Valeur;
     }
 
 
@@ -23,5 +29,9 @@ namespace ImmobilierCalculator.Application.ValueObjects
     public sealed record ChargeMensuelle(int Valeur) : Montant(Valeur);
     public sealed record Apport(int Valeur) : Montant(Valeur);
     public sealed record Loyer(int Valeur) : Montant(Valeur);
-    public sealed record BénéficeMensuel(int Valeur) : Montant(Valeur);
+
+    public abstract record MontantOpérationMensuel(int Valeur) : Montant(Valeur);
+    public sealed record OperationNeutre() : MontantOpérationMensuel(0);
+    public sealed record BénéficeMensuel(int Valeur) : MontantOpérationMensuel(Valeur);
+    public sealed record CoûtMensuel(int Valeur) : MontantOpérationMensuel(Valeur); 
 }
