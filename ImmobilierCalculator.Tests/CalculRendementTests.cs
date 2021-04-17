@@ -1,6 +1,6 @@
 using System;
 using FluentAssertions;
-using ImmobilierCalculator.Application.Rendement;
+using ImmobilierCalculator.Application.Calculatrices;
 using ImmobilierCalculator.Application.ValueObjects;
 using Xunit;
 

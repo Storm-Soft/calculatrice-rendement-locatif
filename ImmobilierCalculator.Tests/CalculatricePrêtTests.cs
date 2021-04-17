@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ImmobilierCalculator.Application.Rendement;
+using ImmobilierCalculator.Application.Calculatrices;
 using ImmobilierCalculator.Application.ValueObjects;
 using Xunit;
 

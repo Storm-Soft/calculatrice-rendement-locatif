@@ -1,33 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using ImmobilierCalculator.Application.ValueObjects;
 
-namespace ImmobilierCalculator.Application.Rendement
+namespace ImmobilierCalculator.Application.Calculatrices
 {
-   
-    public sealed class CalculatriceRendement
-    {
-        public ValueObjects.Rendement Calculer(Prêt prêt, IList<ConditionLocative> conditions, Taxe taxeFoncière)
-            => new((conditions.Sum(x => x.Loyer.Valeur + x.Charges.Valeur) * 12m - taxeFoncière.Valeur) / prêt.Montant.Valeur * 100);
-
-        public Simulation Simuler(ValueObjects.Rendement rendement, BienImmobilier bienImmobilier)
-        {
-            var montantPrêt = new MontantPrêt(bienImmobilier.Montant.Valeur);
-            var loyernécessaire = new Loyer((int)Math.Round((rendement.Valeur * montantPrêt.Valeur) / (12 * 100) + bienImmobilier.TaxeFoncière.Valeur/12));
-
-            var loyerParM2 = loyernécessaire.Valeur * 1d / bienImmobilier.Lots.Sum(x => x.Surface.Valeur);
-
-            var prêt = new CalculatricePrêt().Calculer(montantPrêt, new MontantEchéance(loyernécessaire.Valeur),
-                new DuréePrêt(180));
-            
-            var conditionsLocatives = bienImmobilier.Lots.Select(
-                lot => new ConditionLocative(new Loyer((int)Math.Round(loyerParM2 * lot.Surface.Valeur)), new ChargeMensuelle(0), lot.Surface));
-
-            return new Simulation(prêt, conditionsLocatives.ToList());
-        }
-    }
-
     public sealed class CalculatricePrêt
     {
         public Prêt Calculer(MontantEchéance echéance, DuréePrêt durée,
@@ -85,5 +60,4 @@ namespace ImmobilierCalculator.Application.Rendement
             return prêt ;
         }
     }
-
 }
