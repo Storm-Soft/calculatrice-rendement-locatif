@@ -7,8 +7,11 @@
         <RadzenArcGaugeScale Step="0.5" Min="0" Max="@valeurMax" MinorStep="0.5" Radius="1.5" TickPosition="GaugeTickPosition.Inside" Y="0.9" Margin="0">
             <RadzenArcGaugeScaleValue Value=@valeur ShowValue=true Fill="@evaluation">
                 <Template Context="pointer">
-                    <h2>@pointer.Value</h2>
-                </Template>
+                    <div style="margin-top: -40px">
+                        <h3>Rendement</h3>
+                        <h2 style="text-align: center;color:@evaluation">@pointer.Value</h2>
+                    </div>
+                    </Template>
             </RadzenArcGaugeScaleValue>
         </RadzenArcGaugeScale>
     </RadzenArcGauge>
@@ -43,7 +46,7 @@
         else if (valeur < 5d)
             evaluation = "orange";
         else if (valeur < 7d)
-            evaluation = "yellow";
+            evaluation = "#FFD800";
         else evaluation = "green";
         StateHasChanged();
     }
