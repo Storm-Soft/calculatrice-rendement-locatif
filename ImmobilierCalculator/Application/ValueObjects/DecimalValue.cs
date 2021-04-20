@@ -1,17 +1,17 @@
 ﻿namespace ImmobilierCalculator.Application.ValueObjects
 {
-    public record DecimalValue(decimal Valeur)
+    public record DoubleValue(double Valeur)
     {
-        public static DecimalValue operator +(DecimalValue valeurA, DecimalValue valeurB)
+        public static DoubleValue operator +(DoubleValue valeurA, DoubleValue valeurB)
             => new(valeurA.Valeur + valeurB.Valeur);
 
-        public static bool operator >(DecimalValue valeurA, DecimalValue valeurB)
+        public static bool operator >(DoubleValue valeurA, DoubleValue valeurB)
             => valeurA.Valeur > valeurB.Valeur;
 
-        public static bool operator <(DecimalValue valeurA, DecimalValue valeurB)
+        public static bool operator <(DoubleValue valeurA, DoubleValue valeurB)
             => valeurA.Valeur < valeurB.Valeur;
 
-        public static DecimalValue operator *(DecimalValue valeurA, decimal coefficient)
+        public static DoubleValue operator *(DoubleValue valeurA, double coefficient)
             => valeurA with { Valeur = valeurA.Valeur * coefficient };
     }
 }

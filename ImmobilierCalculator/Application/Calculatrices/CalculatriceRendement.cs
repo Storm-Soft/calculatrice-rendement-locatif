@@ -13,7 +13,7 @@ namespace ImmobilierCalculator.Application.Calculatrices
         /// Calcule le rendement à partir d'un prêt, de conditions locatives et d'une taxe foncière
         /// </summary>
         public Rendement Calculer(Prêt prêt, IList<ConditionLocative> conditions, Taxe taxeFoncière)
-            => new((conditions.Sum(x => x.Loyer.Valeur + x.Charges.Valeur) * 12m - taxeFoncière.Valeur) / prêt.Montant.Valeur * 100);
+            => new((conditions.Sum(x => x.Loyer.Valeur + x.Charges.Valeur) * 12 - taxeFoncière.Valeur) / prêt.Montant.Valeur * 100);
 
         /// <summary>
         /// Calcule le loyer minimum pour atteindre un rendement en fonction d'un prêt et d'une taxe foncière
@@ -27,8 +27,8 @@ namespace ImmobilierCalculator.Application.Calculatrices
             => échéance == loyer
                 ? new OperationNeutre()
                 :(échéance > loyer)
-                    ? new CoûtMensuel(échéance - loyer)
-                    : new BénéficeMensuel(loyer - échéance);
+                    ? new CoûtMensuel((échéance - loyer).Valeur)
+                    : new BénéficeMensuel((loyer - échéance).Valeur);
 
         public Simulation Simuler(Rendement rendement, BienImmobilier bienImmobilier)
         {

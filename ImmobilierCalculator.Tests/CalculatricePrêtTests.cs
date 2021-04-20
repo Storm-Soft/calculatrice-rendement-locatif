@@ -17,8 +17,8 @@ namespace ImmobilierCalculator.Tests
         {
             var mensualité = new MontantEchéance(1011);
             var durée = new DuréePrêt(180);
-            var taux = new TauxNetPrêt(0.85m);
-            var assurance = new TauxAssurancePrêt(0.15m);
+            var taux = new TauxNetPrêt(0.85);
+            var assurance = new TauxAssurancePrêt(0.15);
 
             var prêt = new CalculatricePrêt().Calculer(mensualité, durée, taux, assurance);
             var montantAttendu = new MontantPrêt(168924);
@@ -28,29 +28,29 @@ namespace ImmobilierCalculator.Tests
         [Fact(DisplayName = "Calculer de l'échéance")]
         public void Calcul_Mensualité()
         {
-            var montant = new MontantPrêt(169000);
+            var montant = new MontantPrêt(169_000);
             var durée = new DuréePrêt(180);
-            var taux = new TauxNetPrêt(0.85m);
-            var assurance = new TauxAssurancePrêt(0.15m);
+            var taux = new TauxNetPrêt(0.85);
+            var assurance = new TauxAssurancePrêt(0.15);
 
             var prêt = new CalculatricePrêt().Calculer(montant, durée, taux, assurance);
 
-            var échéanceAttendue = new MontantEchéance(1011);
-            prêt.Echéance.Should().Be(échéanceAttendue);
+            var échéanceAttendue = 1011;
+            prêt.Echéance.Round().Should().Be(échéanceAttendue);
         }
 
         [Fact(DisplayName = "Calculer du taux")]
         public void Calcul_Taux()
         {
-            var montant = new MontantPrêt(169000);
+            var montant = new MontantPrêt(169_000);
             var mensualité = new MontantEchéance(1011);
             var durée = new DuréePrêt(180);
 
             var prêt = new CalculatricePrêt().Calculer(montant, mensualité, durée);
-            var tauxAttendu = new TauxNetPrêt(0.85m);
+            var tauxAttendu = new TauxNetPrêt(0.85);
 
-            var acceptable = prêt.Taux < tauxAttendu * 1.01m && prêt.Taux < tauxAttendu * 0.99m;
-            acceptable.Should().BeTrue();
+            var acceptable = prêt.Taux < tauxAttendu * 1.01 && prêt.Taux > tauxAttendu * 0.99;
+            acceptable.Should().BeTrue($"taux attendu {tauxAttendu} - taux trouvé {prêt.Taux}");
         }
 
     }

@@ -24,15 +24,15 @@
     [Parameter]
     public Rendement Rendement
     {
-        get => new Rendement((decimal)valeur);
+        get => new Rendement(valeur);
         set => UpdateRendement(value);
     }
 
     [Parameter]
     public Rendement RendementMaximum
     {  
-        get => new Rendement((decimal)valeur);
-        set => valeurMax = decimal.ToDouble(value.Valeur);
+        get => new Rendement(valeur);
+        set => valeurMax = value.Valeur;
     }
 
     [Parameter] public EventCallback<Rendement> RendementChanged { get; set; }
@@ -40,7 +40,7 @@
 
     void UpdateRendement(Rendement value)
     {
-        valeur = decimal.ToDouble(Math.Round(value.Valeur, 2));
+        valeur = Math.Round(value.Valeur, 2);
         if (valeur < 3d)
             evaluation = "red";
         else if (valeur < 5d)

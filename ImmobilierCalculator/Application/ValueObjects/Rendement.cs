@@ -1,4 +1,4 @@
 ﻿namespace ImmobilierCalculator.Application.ValueObjects
 {
-    public sealed record Rendement(decimal Valeur) : DecimalValue(Valeur);
+    public sealed record Rendement(double Valeur) : DoubleValue(Valeur);
 }

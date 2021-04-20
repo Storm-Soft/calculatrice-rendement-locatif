@@ -10,7 +10,7 @@ namespace ImmobilierCalculator.Application.Calculatrices
         {
             var taegMensuel = (taux + assurance).TauxPeriodiqueMensuel();
 
-            var montant = (int)Math.Round(echéance.Valeur*(1-Math.Pow(1+ taegMensuel, -durée.NombreMois))/ taegMensuel);
+            var montant = Math.Round(echéance.Valeur*(1-Math.Pow(1+ taegMensuel.Valeur, -durée.NombreMois))/ taegMensuel.Valeur);
 
             return new Prêt(new(montant), echéance, taux, durée, assurance);
         }
@@ -20,8 +20,8 @@ namespace ImmobilierCalculator.Application.Calculatrices
         {
             var taegMensuel = (taux + assurance).TauxPeriodiqueMensuel();
 
-            var échéance = (int)Math.Round(montantTotal.Valeur * taegMensuel / (1 - Math.Pow(
-                1 + taegMensuel, -durée.NombreMois)));
+            var échéance =(montantTotal * taegMensuel).Valeur / (1 - Math.Pow(
+                1 + taegMensuel.Valeur, -durée.NombreMois));
 
             return new Prêt(montantTotal, new(échéance), taux, durée, assurance);
 
@@ -29,10 +29,10 @@ namespace ImmobilierCalculator.Application.Calculatrices
 
         public Prêt Calculer(MontantPrêt montantTotal, MontantEchéance échéance, DuréePrêt durée)
         {
-            var taux = 0.5m;
+            var taux = 0.5;
 
-            var tauxPrêt = new TauxNetPrêt(0.5m);
-            var tauxAssurance = new TauxAssurancePrêt(0.15m);
+            var tauxPrêt = new TauxNetPrêt(0.5);
+            var tauxAssurance = new TauxAssurancePrêt(0.15);
 
             var prêt = Calculer(montantTotal, durée, tauxPrêt, tauxAssurance);
 
@@ -42,7 +42,7 @@ namespace ImmobilierCalculator.Application.Calculatrices
             {
                 do
                 {
-                    taux = taux - 0.01m;
+                    taux = taux - 0.01;
                     tauxPrêt = new(taux);
                     prêt = Calculer(montantTotal, durée, tauxPrêt, tauxAssurance);
                 } while (prêt.Echéance > échéance);
@@ -51,7 +51,7 @@ namespace ImmobilierCalculator.Application.Calculatrices
             {
                 do
                 {
-                    taux = taux + 0.01m;
+                    taux = taux + 0.01;
                     tauxPrêt = new(taux);
                     prêt = Calculer(montantTotal, durée, tauxPrêt, tauxAssurance);
                 } while (prêt.Echéance < échéance);

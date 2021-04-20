@@ -7,11 +7,11 @@
         break;
     case CoûtMensuel cout:
         <h3>Coût mensuel</h3>
-        <h2 style="color: red">@cout.Valeur€</h2>
+        <h2 style="color: red">@cout.Valeur.ToString("C0")</h2>
         break;
     case BénéficeMensuel bénéfice:
         <h3>Bénéfice mensuel</h3>
-        <h2 style="color: green">@bénéfice.Valeur€</h2>
+        <h2 style="color: green">@bénéfice.Valeur.ToString("C0")</h2>
         break;
 }
 
