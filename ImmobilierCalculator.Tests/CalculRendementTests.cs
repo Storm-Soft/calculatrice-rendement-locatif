@@ -11,12 +11,12 @@ namespace ImmobilierCalculator.Tests
         [Fact(DisplayName = "Calcul du rendement")]
         public void Calculer()
         {
-            var prêt = new Prêt(
-                new(150_000),
-                new(1000),
-                new(0.85),
-                new(150), 
-                new(0.15));
+            var bienImmobilier = new BienImmobilier(
+                new(120_000),
+                new MontantTravaux(30_000),
+                default, 
+                default,
+                new Taxe(1500));
 
             var conditions = new ConditionLocative[]
             {
@@ -25,7 +25,7 @@ namespace ImmobilierCalculator.Tests
                 new(new(400), new(0), new(40)),
             };
 
-            var rendement = new CalculatriceRendement().Calculer(prêt, conditions, new(1500));
+            var rendement = new CalculatriceRendement().Calculer(bienImmobilier, conditions);
 
             rendement.Valeur.Should().Be(10.52);
         }
@@ -35,8 +35,8 @@ namespace ImmobilierCalculator.Tests
         {
             var rendement = new Rendement(7);
             var bien = new BienImmobilier(
-                new MontantBien(169_000),
-                new MontantTravaux(0),
+                new MontantBien(150_000),
+                new MontantTravaux(19_000),
                 new Surface(150),
                 new[]
                 {
@@ -49,7 +49,7 @@ namespace ImmobilierCalculator.Tests
             var simulation = new CalculatriceRendement().Simuler(rendement, bien);
 
             var rendementCalculé =
-                new CalculatriceRendement().Calculer(simulation.Prêt, simulation.ConditionLocatives, bien.TaxeFoncière);
+                new CalculatriceRendement().Calculer(bien, simulation.ConditionLocatives);
 
             var acceptable = rendementCalculé > rendement * 0.99 && rendementCalculé < rendement * 1.01;
             acceptable.Should().BeTrue();

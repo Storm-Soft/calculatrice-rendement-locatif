@@ -12,14 +12,14 @@ namespace ImmobilierCalculator.Application.Calculatrices
         /// <summary>
         /// Calcule le rendement à partir d'un prêt, de conditions locatives et d'une taxe foncière
         /// </summary>
-        public Rendement Calculer(Prêt prêt, IList<ConditionLocative> conditions, Taxe taxeFoncière)
-            => new((conditions.Sum(x => x.Loyer.Valeur + x.Charges.Valeur) * 12 - taxeFoncière.Valeur) / prêt.Montant.Valeur * 100);
+        public Rendement Calculer(BienImmobilier bienImmobilier, IList<ConditionLocative> conditions)
+            => new((conditions.Sum(x => x.Loyer.Valeur + x.Charges.Valeur) * 12 - bienImmobilier.TaxeFoncière.Valeur) / bienImmobilier.MontantTotal.Valeur * 100);
 
         /// <summary>
         /// Calcule le loyer minimum pour atteindre un rendement en fonction d'un prêt et d'une taxe foncière
         /// </summary>
-        public Loyer Calculer(MontantPrêt prêt, Rendement rendement, Taxe taxeFoncière)
-         => new ((int) Math.Round((rendement.Valeur* prêt.Valeur) / (12 * 100) + taxeFoncière.Valeur/12));
+        public Loyer Calculer(BienImmobilier bienImmobilier, Rendement rendement)
+         => new ((int) Math.Round((rendement.Valeur* bienImmobilier.MontantTotal.Valeur) / (12 * 100) + bienImmobilier.TaxeFoncière.Valeur/12));
 
         /// <summary>
         /// Calcule le montant mensuel de l'opération
@@ -34,7 +34,7 @@ namespace ImmobilierCalculator.Application.Calculatrices
         {
             var montantPrêt = new MontantPrêt(bienImmobilier.Montant.Valeur);
             var loyernécessaire =
-                new CalculatriceRendement().Calculer(montantPrêt, rendement, bienImmobilier.TaxeFoncière);
+                new CalculatriceRendement().Calculer(bienImmobilier, rendement);
             var loyerParM2 = loyernécessaire.Valeur * 1d / bienImmobilier.Lots.Sum(x => x.Surface.Valeur);
 
             var prêt = new CalculatricePrêt().Calculer(montantPrêt, new MontantEchéance(loyernécessaire.Valeur),

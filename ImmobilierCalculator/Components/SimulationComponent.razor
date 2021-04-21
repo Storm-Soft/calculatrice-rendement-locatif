@@ -34,8 +34,6 @@
                     </div>
                 </div>
             </RadzenFieldset>
-        </div>
-        <div class="col-md-6">
             <RadzenFieldset Text="Prêt">
                 <div class="row">
                     <div class="col-md-4 align-items-center d-flex">
@@ -216,10 +214,11 @@
     {
         var conditions = new ConditionLocative(loyer, new ChargeMensuelle(0), new Surface(0));
 
+        var bien = new BienImmobilier(montantBien, montantTravaux, default, default, taxe);
         var calculatrice = new CalculatriceRendement();
-        rendement = calculatrice.Calculer(prêt, new[] { conditions }, taxe);
+        rendement = calculatrice.Calculer(bien, new[] { conditions });
 
-        var loyerMax = calculatrice.Calculer(prêt.Montant, rendementMax, taxe);
+        var loyerMax = calculatrice.Calculer(bien, rendementMax);
 
         montantMensuel = calculatrice.Calculer(prêt.Echéance, loyer);
 
