@@ -21,6 +21,9 @@ namespace ImmobilierCalculator.Application.ValueObjects
         public static Montant operator *(Montant montantA, Taux taux)
             => new(montantA.Valeur * taux.Valeur);
 
+        public static Montant operator *(Montant montantA, double coefficient)
+            => new(montantA.Valeur * coefficient);
+
         public static Montant operator +(Montant montantA, Montant montantB)
             => new(montantA.Valeur + montantB.Valeur);
 

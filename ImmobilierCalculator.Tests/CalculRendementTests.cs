@@ -16,7 +16,8 @@ namespace ImmobilierCalculator.Tests
                 new MontantTravaux(30_000),
                 default, 
                 default,
-                new Taxe(1500));
+                new Taxe(1500),
+                Localisation:Départements.Isère);
 
             var conditions = new ConditionLocative[]
             {
@@ -44,7 +45,8 @@ namespace ImmobilierCalculator.Tests
                     new Lot(new(42), 2),
                     new Lot(new(40), 3),
                 },
-                new Taxe(1000));
+                new Taxe(1000),
+                Départements.Isère);
 
             var simulation = new CalculatriceRendement().Simuler(rendement, bien);
 

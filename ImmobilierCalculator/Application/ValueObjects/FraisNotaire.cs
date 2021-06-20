@@ -15,4 +15,13 @@ namespace ImmobilierCalculator.Application.ValueObjects
     public record FraisNotaire(MontantTranche Tranche1, MontantTranche Tranche2, MontantTranche Tranche3,
         MontantTranche Tranche4) : Montant(Tranche1 + Tranche2 + Tranche3 + Tranche4);
 
+    public record EmolumentsFormalité(double Valeur) : Montant(Valeur);
+    public record FraisDivers(double Valeur) : Montant(Valeur);
+    public record DroitsMutation(double Valeur) : Montant(Valeur);
+    public record ContributionSécuritéImmobilière(double Valeur) : Montant(Valeur);
+
+    public record FraisNotariaux(FraisNotaire FraisNotaire, EmolumentsFormalité EmolumentsFormalité,
+            FraisDivers FraisDivers, DroitsMutation DroitsMutation,
+            ContributionSécuritéImmobilière ContributionSécuritéImmobilière)
+        : Montant(FraisNotaire + EmolumentsFormalité + FraisDivers + DroitsMutation + ContributionSécuritéImmobilière);
 }

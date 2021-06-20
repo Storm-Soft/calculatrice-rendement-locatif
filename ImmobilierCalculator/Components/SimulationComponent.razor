@@ -1,6 +1,7 @@
 ﻿@using ImmobilierCalculator.Application.ValueObjects
 @using ImmobilierCalculator.Application.Calculatrices
 @using Microsoft.AspNetCore.Components
+@using Radzen
 
 
 <RadzenTemplateForm Data="@this">
@@ -18,10 +19,21 @@
                 </div> 
                 <div class="row">
                     <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Localisation" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDown TValue="Département" Style="width: 300px" @bind-Value=@Localisation
+                                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        LoadData=@ChargerDépartements  Data="@départements"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
                         <RadzenLabel Text="Frais de notaire" />
                     </div>
                     <div class="col-md-8">
-                        <RadzenNumeric ShowUpDown="false" TValue="double" rea @bind-Value=@FraisNotaire />
+                        <RadzenNumeric ShowUpDown="false" TValue="double" rea @bind-Value=@FraisNotariaux />
                     </div>
                 </div>
                 <div class="row">
@@ -132,6 +144,15 @@
         set => Calculate(new MontantBien(value));
     }
 
+    private IEnumerable<Département> départements = Départements.All();
+
+    private Département localisation = Départements.Isère;
+
+    public Département Localisation
+    {
+        get => localisation;
+        set => Calculate(value);
+    }
     private MontantTravaux montantTravaux = new MontantTravaux(0);
     public int MontantTravaux
     {
@@ -140,7 +161,7 @@
     }
 
 
-    public double FraisNotaire { get; set; }
+    public double FraisNotariaux { get; set; }
 
     private bool pretParMensualite = false;
 
@@ -210,11 +231,11 @@
     private Rendement rendementMax = new Rendement(10);
     private MontantOpérationMensuel montantMensuel = new OperationNeutre();
 
-    void Calculate(Prêt prêt, Taxe taxe, Loyer loyer, MontantBien montantBien, MontantTravaux montantTravaux)
+    void Calculate(Prêt prêt, Taxe taxe, Loyer loyer, MontantBien montantBien, MontantTravaux montantTravaux, Département département)
     {
         var conditions = new ConditionLocative(loyer, new ChargeMensuelle(0), new Surface(0));
 
-        var bien = new BienImmobilier(montantBien, montantTravaux, default, default, taxe);
+        var bien = new BienImmobilier(montantBien, montantTravaux, default, default, taxe, département);
         var calculatrice = new CalculatriceRendement();
         rendement = calculatrice.Calculer(bien, new[] { conditions });
 
@@ -222,36 +243,39 @@
 
         montantMensuel = calculatrice.Calculer(prêt.Echéance, loyer);
 
-        var fraisNotaire = new CalculatriceFraisNotaire().Calculer(bienImmobilier: new BienImmobilier(montantBien, default, default, default, default));
-     
-        var montantPretMax = montantBien + montantTravaux + fraisNotaire;
-        Apply(prêt, taxe, loyer, rendement, loyerMax, montantBien, montantTravaux, fraisNotaire, montantPretMax);
+        var fraisNotariaux = new CalculatriceFraisNotariaux().Calculer(bienImmobilier: new BienImmobilier(montantBien, default, default, default, default, Localisation: département));
+
+        var montantPretMax = montantBien + montantTravaux + fraisNotariaux;
+        Apply(prêt, taxe, loyer, rendement, loyerMax, montantBien, montantTravaux, fraisNotariaux, montantPretMax, département);
     }
 
     void Calculate(MontantBien montant)
-        => Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montant, montantTravaux);
-    
+        => Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montant, montantTravaux, localisation);
+
+    void Calculate(Département localisation)
+        => Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux,localisation);
+
     void Calculate(MontantTravaux montant)
-        => Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montantBien, montant);
+        => Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montantBien, montant, localisation);
 
     void Calculate(MontantPrêt montant)
     {
         pretParMensualite = false;
-        Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux);
+        Calculate(new CalculatricePrêt().Calculer(montant, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux, localisation);
     }
 
     void Calculate(MontantEchéance échéance)
     {
         pretParMensualite = true;
-        Calculate(new CalculatricePrêt().Calculer(échéance, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux);
+        Calculate(new CalculatricePrêt().Calculer(échéance, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux, localisation);
     }
 
     void Calculate(DuréePrêt duree, TauxNetPrêt taux, TauxAssurancePrêt assurance)
     {
         if (pretParMensualite)
-            Calculate(new CalculatricePrêt().Calculer(mensualites, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux);
+            Calculate(new CalculatricePrêt().Calculer(mensualites, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux, localisation);
         else
-            Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux);
+            Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux, localisation);
     }
 
     void Calculate(DuréePrêt duree)
@@ -264,13 +288,13 @@
         => Calculate(duree, taux, assurance);
 
     void Calculate(Taxe taxe)
-        => Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux);
+        => Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux, localisation);
 
     void Calculate(Loyer loyer)
-        => Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux);
+        => Calculate(new CalculatricePrêt().Calculer(montantPret, duree, taux, assurance), taxe, loyer, montantBien, montantTravaux, localisation);
 
 
-    private void Apply(Prêt prêt, Taxe taxe, Loyer loyer, Rendement rendement, Loyer loyerMax, MontantBien montantBien, MontantTravaux montantTravaux, FraisNotaire fraisNotaire, Montant montantPrêtMax)
+    private void Apply(Prêt prêt, Taxe taxe, Loyer loyer, Rendement rendement, Loyer loyerMax, MontantBien montantBien, MontantTravaux montantTravaux, FraisNotariaux fraisNotariaux, Montant montantPrêtMax, Département localisation)
     {
         this.rendement = rendement;
         this.taxe = taxe;
@@ -281,11 +305,23 @@
         this.taux = prêt.Taux;
         this.assurance = prêt.TauxAssurance;
         this.LoyerMax = loyerMax.Round();
-        FraisNotaire = Math.Round(fraisNotaire.Valeur, 2);
+        FraisNotariaux = Math.Round(fraisNotariaux.Valeur, 2);
         this.MontantPretMax = montantPrêtMax.Round();
         this.montantBien = montantBien;
         this.montantTravaux = montantTravaux;
+        this.localisation = localisation;
         StateHasChanged();
+    }
+
+    private Task ChargerDépartements(LoadDataArgs args)
+    {
+        départements = Départements.All();
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            var filter = args.Filter.ToLower();
+            départements = Départements.All().Where(x => x.Numéro.ToLower().Contains(filter) || x.Nom.ToLower().Contains(filter));
+        }
+        return InvokeAsync(StateHasChanged);
     }
 }
 
